@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportSpace - Peminjaman Alat Olahraga</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles/custom.css">
+    
+    <style>
+        /* Style untuk Cetak */
+        @media print {
+            body.printing {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt;
+                line-height: 1.4;
+                margin: 0;
+                padding: 0;
+            }
+            
+            body.printing * {
+                color: black !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            
+            body.printing #global-loader-container,
+            body.printing #global-message-container,
+            body.printing #global-confirmation-container,
+            body.printing #sidebar,
+            body.printing header,
+            body.printing button,
+            body.printing .no-print,
+            body.printing #mobile-menu-button,
+            body.printing #btn-cetak-bukti,
+            body.printing #btn-tutup-bukti {
+                display: none !important;
+            }
+            
+            body.printing #app-container,
+            body.printing #main-content,
+            body.printing #page-laporan {
+                display: block !important;
+                visibility: visible !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                position: static !important;
+            }
+            
+            body.printing #page-laporan > *:not(#laporan-print-area-wrapper) {
+                display: none !important;
+            }
+            
+            body.printing .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #000;
+            }
+            
+            body.printing .print-header h1 {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 5px;
+                color: #000;
+            }
+            
+            body.printing .print-header p {
+                font-size: 14px;
+                color: #666;
+                margin: 0;
+            }
+            
+            body.printing .print-info {
+                display: flex !important;
+                justify-content: space-between;
+                margin-bottom: 15px;
+                font-size: 12px;
+                color: #333;
+                padding: 10px;
+                background-color: #f5f5f5 !important;
+            }
+            
+            body.printing #laporan-print-area {
+                display: block !important;
+                width: 100%;
+            }
+            
+            body.printing #laporan-print-area table {
+                font-size: 10pt;
+                border-collapse: collapse;
+                width: 100%;
+                font-family: Arial, sans-serif;
+                page-break-inside: auto;
+                margin-bottom: 20px;
+            }
+            
+            body.printing #laporan-print-area th,
+            body.printing #laporan-print-area td {
+                border: 1px solid #333;
+                padding: 8px;
+                text-align: left;
+                page-break-inside: avoid;
+                color: #000 !important;
+            }
+            
+            body.printing #laporan-print-area thead {
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            body.printing #laporan-print-area th {
+                font-weight: bold;
+                background-color: #e9ecef !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+                font-size: 11pt;
+                color: #000 !important;
+            }
+            
+            body.printing #laporan-print-area tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            
+            body.printing #laporan-print-area td {
+                font-size: 10pt;
+                vertical-align: top;
+                color: #000 !important;
+            }
+            
+            body.printing .status-badge {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 9pt;
+                font-weight: bold;
+                display: inline-block;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            body.printing .status-waiting {
+                background-color: #fff3cd !important;
+                color: #856404 !important;
+                border: 1px solid #ffeaa7;
+            }
+            
+            body.printing .status-approved {
+                background-color: #d1edff !important;
+                color: #0c5460 !important;
+                border: 1px solid #bee5eb;
+            }
+            
+            body.printing .status-rejected {
+                background-color: #f8d7da !important;
+                color: #721c24 !important;
+                border: 1px solid #f5c6cb;
+            }
+            
+            body.printing .status-returned {
+                background-color: #d4edda !important;
+                color: #155724 !important;
+                border: 1px solid #c3e6cb;
+            }
+            
+            body.printing .print-summary {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: #f8f9fa !important;
+                border: 1px solid #dee2e6;
+                page-break-before: avoid;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            body.printing .print-summary h3 {
+                font-size: 14pt;
+                margin-bottom: 10px;
+                color: #000;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+            }
+            
+            body.printing .print-summary p {
+                margin: 5px 0;
+                font-size: 11pt;
+                color: #000;
+            }
+            
+            @page {
+                margin: 1.5cm;
+                size: A4 portrait;
+            }
+            
+            body.printing #laporan-print-area tbody tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div id="global-loader-container" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[9999] hidden">
+        <div class="loader"></div>
+    </div>
+    
+    <div id="global-message-container" class="fixed top-5 right-5 z-[9998] w-80">
+        <div id="global-message-success" class="hidden bg-green-500 text-white p-4 rounded-lg shadow-lg mb-2">
+            <span id="global-message-success-text"></span>
+        </div>
+        <div id="global-message-error" class="hidden bg-red-500 text-white p-4 rounded-lg shadow-lg mb-2">
+            <span id="global-message-error-text"></span>
+        </div>
+    </div>
+
+    <div id="global-confirmation-container" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-[9997] hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 class="text-lg font-semibold mb-4" id="global-confirmation-title">Konfirmasi</h3>
+            <p class="text-gray-600 mb-6" id="global-confirmation-message">Apakah Anda yakin?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="global-confirmation-cancel" class="py-2 px-4 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Batal</button>
+                <button id="global-confirmation-confirm" class="py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Yakin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Halaman Utama (Landing Page) -->
+    <div id="landing-page" class="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+        <!-- Header -->
+        <header class="container mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-dumbbell text-3xl mr-3"></i>
+                    <h1 class="text-3xl font-bold">SportSpace</h1>
+                </div>
+                <div>
+                    <button id="btn-to-login" class="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-100 transition duration-300">
+                        Masuk
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="container mx-auto px-4 py-16">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">Sistem Peminjaman Alat Olahraga Modern</h2>
+                    <p class="text-xl mb-8 text-blue-100">Kelola peminjaman alat olahraga dengan mudah, cepat, dan efisien. SportSpace menyediakan solusi lengkap untuk kebutuhan manajemen peralatan olahraga Anda.</p>
+                    <div class="flex space-x-4">
+                        <button id="btn-to-login2" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-100 transition duration-300">
+                            Mulai Sekarang
+                        </button>
+                        <button id="btn-learn-more" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition duration-300">
+                            Pelajari Lebih Lanjut
+                        </button>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center fade-in" style="animation-delay: 0.3s;">
+                    <div class="relative">
+                        <div class="bg-white rounded-2xl p-6 shadow-2xl transform rotate-3 w-80">
+                            <div class="bg-blue-600 text-white p-4 rounded-xl mb-4">
+                                <h3 class="font-bold text-lg">Peminjaman Sepeda</h3>
+                                <p class="text-sm">Status: <span class="font-semibold">Disetujui</span></p>
+                            </div>
+                            <div class="text-gray-700">
+                                <p class="mb-2"><i class="fas fa-user mr-2 text-blue-500"></i>Nama: Ahmad Rizki</p>
+                                <p class="mb-2"><i class="fas fa-calendar mr-2 text-blue-500"></i>Tanggal: 15 November 2025</p>
+                                <p class="mb-2"><i class="fas fa-clock mr-2 text-blue-500"></i>Durasi: 7 Hari</p>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-2xl transform -rotate-6 w-64">
+                            <div class="flex items-center mb-2">
+                                <i class="fas fa-volleyball-ball text-blue-600 mr-2"></i>
+                                <h4 class="font-bold text-gray-800">Bola Voli</h4>
+                            </div>
+                            <p class="text-sm text-gray-600">Tersedia: 12 buah</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fitur Section -->
+        <section id="fitur-section" class="bg-white py-16 text-gray-800">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-4">Fitur Unggulan SportSpace</h2>
+                <p class="text-xl text-center text-gray-600 mb-12 max-w-2xl mx-auto">Nikmati berbagai fitur canggih yang memudahkan proses peminjaman dan pengelolaan alat olahraga</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-search text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Pencarian Alat Cepat</h3>
+                        <p class="text-gray-600">Temukan alat olahraga yang Anda butuhkan dengan cepat menggunakan sistem pencarian yang intuitif.</p>
+                    </div>
+                    
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-green-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-clipboard-check text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Persetujuan Online</h3>
+                        <p class="text-gray-600">Proses persetujuan peminjaman dilakukan secara online dengan notifikasi real-time.</p>
+                    </div>
+                    
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-purple-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-file-invoice-dollar text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Sistem Denda Otomatis</h3>
+                        <p class="text-gray-600">Hitung denda keterlambatan pengembalian secara otomatis berdasarkan aturan yang berlaku.</p>
+                    </div>
+                    
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-yellow-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-chart-bar text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Laporan Lengkap</h3>
+                        <p class="text-gray-600">Akses laporan lengkap tentang peminjaman, pengembalian, dan statistik penggunaan alat.</p>
+                    </div>
+                    
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-red-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-print text-red-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Cetak Bukti Peminjaman</h3>
+                        <p class="text-gray-600">Cetak bukti peminjaman resmi dengan informasi lengkap untuk keperluan administrasi.</p>
+                    </div>
+                    
+                    <div class="feature-card bg-gray-50 p-6 rounded-xl border border-gray-200">
+                        <div class="bg-indigo-100 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-user-shield text-indigo-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Manajemen Pengguna</h3>
+                        <p class="text-gray-600">Kelola akses pengguna dengan sistem peran Admin dan Anggota untuk keamanan data.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cara Kerja Section -->
+        <section class="py-16 bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+            <div class="container mx-auto px-4">
+                <h2 class="text-3xl font-bold text-center mb-4">Cara Kerja SportSpace</h2>
+                <p class="text-xl text-center text-blue-100 mb-12 max-w-2xl mx-auto">Hanya dalam 4 langkah mudah, Anda dapat meminjam alat olahraga yang dibutuhkan</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="bg-white text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+                        <h3 class="text-xl font-bold mb-3">Daftar / Login</h3>
+                        <p class="text-blue-100">Buat akun atau masuk ke sistem SportSpace</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-white text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+                        <h3 class="text-xl font-bold mb-3">Ajukan Peminjaman</h3>
+                        <p class="text-blue-100">Cari alat dan ajukan peminjaman dengan mengisi form</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-white text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+                        <h3 class="text-xl font-bold mb-3">Tunggu Persetujuan</h3>
+                        <p class="text-blue-100">Admin akan meninjau dan menyetujui permintaan Anda</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-white text-blue-600 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">4</div>
+                        <h3 class="text-xl font-bold mb-3">Ambil & Kembalikan</h3>
+                        <p class="text-blue-100">Ambil alat yang disetujui dan kembalikan tepat waktu</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white py-8">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <div class="flex items-center">
+                            <i class="fas fa-dumbbell text-2xl mr-3 text-blue-400"></i>
+                            <h2 class="text-2xl font-bold">SportSpace</h2>
+                        </div>
+                        <p class="text-gray-400 mt-2">Sistem Peminjaman Alat Olahraga Modern</p>
+                    </div>
+                    <div>
+                        <button id="btn-to-login3" class="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 transition duration-300">
+                            Mulai Sekarang
+                        </button>
+                    </div>
+                </div>
+                <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                    <p>&copy; 2025 SportSpace. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Halaman Auth (Login/Register) -->
+    <div id="auth-page" class="min-h-screen flex items-center justify-center bg-blue-600 hidden">
+        <div class="max-w-md w-full bg-white rounded-xl shadow-2xl overflow-hidden">
+            <div class="flex border-b border-gray-200">
+                <button id="tab-login" class="tab-btn flex-1 active" onclick="showTab('login')">Login</button>
+                <button id="tab-register" class="tab-btn flex-1" onclick="showTab('register')">Register</button>
+            </div>
+            
+            <div class="p-8">
+                <form id="login-form" class="space-y-6">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Selamat Datang!</h2>
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input id="login-email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input id="login-password" type="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-150">Login</button>
+                    <div class="text-center">
+                        <button type="button" id="btn-back-to-landing" class="text-blue-600 hover:text-blue-800 text-sm">Kembali ke Halaman Utama</button>
+                    </div>
+                </form>
+                
+                <form id="register-form" class="space-y-6 hidden">
+                    <h2 class="text-2xl font-bold text-center text-gray-800">Buat Akun Baru</h2>
+                    <div>
+                        <label for="register-nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                        <input id="register-nama" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="register-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input id="register-email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="register-password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input id="register-password" type="password" required minlength="6" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <button type="submit" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-150">Register</button>
+                    <div class="text-center">
+                        <button type="button" id="btn-back-to-landing2" class="text-blue-600 hover:text-blue-800 text-sm">Kembali ke Halaman Utama</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Aplikasi Utama -->
+    <div id="app-container" class="hidden">
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden lg:hidden"></div>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-blue-800 text-white p-6 transform -translate-x-full lg:translate-x-0 z-30 overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold flex items-center">
+                    <i class="fas fa-dumbbell mr-2"></i> SportSpace
+                </h1>
+                <button id="close-sidebar" class="lg:hidden text-white">
+                    <i class="fas fa-times w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <nav class="space-y-2" id="nav-links-container">
+                <a href="#" onclick="showPage('page-dashboard'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700 bg-blue-900">
+                    <i class="fas fa-tachometer-alt w-6 h-6 mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" onclick="showPage('page-peminjaman'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-shopping-cart w-6 h-6 mr-3"></i>
+                    Pinjam Alat
+                </a>
+                <a href="#" onclick="showPage('page-riwayat'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-history w-6 h-6 mr-3"></i>
+                    Riwayat Peminjaman
+                </a>
+                
+                <div class="pt-4 admin-only">
+                    <span class="text-xs font-semibold text-blue-300 uppercase">Admin Area</span>
+                    <div class="space-y-2 mt-2">
+                        <a href="#" onclick="showPage('page-alat'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-cogs w-6 h-6 mr-3"></i>
+                            Kelola Alat
+                        </a>
+                        <a href="#" onclick="showPage('page-kelola-pengembalian'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-undo-alt w-6 h-6 mr-3"></i>
+                            Kelola Pengembalian
+                        </a>
+                        <a href="#" onclick="showPage('page-persetujuan'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-clipboard-check w-6 h-6 mr-3"></i>
+                            Persetujuan
+                        </a>
+                        <a href="#" onclick="showPage('page-laporan'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-chart-bar w-6 h-6 mr-3"></i>
+                            Laporan
+                        </a>
+                        <a href="#" onclick="showPage('page-pengguna'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-users w-6 h-6 mr-3"></i>
+                            Manajemen Pengguna
+                        </a>
+                        <a href="#" onclick="showPage('page-denda'); return false;" class="nav-link flex items-center p-3 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>
+                            Pengaturan Denda
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="mt-8 pt-4 border-t border-blue-700">
+                <button id="logout-button" class="flex items-center justify-center w-full p-3 bg-blue-700 hover:bg-red-600 rounded-lg transition duration-150">
+                    <i class="fas fa-sign-out-alt w-6 h-6 mr-2"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <main id="main-content" class="lg:ml-64 p-6 md:p-8">
+            <header class="flex justify-between items-center mb-6">
+                <h2 id="page-title" class="text-2xl font-semibold text-gray-900">Dashboard</h2>
+                
+                <div class="flex items-center">
+                    <span class="mr-4 text-gray-700 hidden md:block">Halo, <strong id="user-display-name">Pengguna</strong>!</span>
+                    <button id="mobile-menu-button" class="lg:hidden p-2 text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-bars w-6 h-6"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard -->
+            <div id="page-dashboard" class="page-content space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">Total Alat</span>
+                            <p id="stat-total-alat" class="text-3xl font-bold text-gray-900">0</p>
+                        </div>
+                        <div class="p-3 bg-blue-100 rounded-full">
+                            <i class="fas fa-dumbbell text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">Alat Dipinjam</span>
+                            <p id="stat-alat-dipinjam" class="text-3xl font-bold text-gray-900">0</p>
+                        </div>
+                        <div class="p-3 bg-yellow-100 rounded-full">
+                            <i class="fas fa-shopping-cart text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">Total Peminjaman</span>
+                            <p id="stat-total-peminjaman" class="text-3xl font-bold text-gray-900">0</p>
+                        </div>
+                        <div class="p-3 bg-green-100 rounded-full">
+                            <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg flex items-center justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">Terlambat</span>
+                            <p id="stat-terlambat" class="text-3xl font-bold text-red-600">0</p>
+                        </div>
+                        <div class="p-3 bg-red-100 rounded-full">
+                            <i class="fas fa-clock text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow-lg rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Peminjaman Aktif Saya</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pinjam</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kembali</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-pinjaman-saya" class="bg-white divide-y divide-gray-200">
+                                <tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kelola Alat (Admin) -->
+            <div id="page-alat" class="page-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Kelola Alat Olahraga</h2>
+                    <button id="btn-tambah-alat" class="py-2 px-4 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                        <i class="fas fa-plus mr-2"></i>Tambah Alat Baru
+                    </button>
+                </div>
+                
+                <!-- Modal Alat (dengan upload gambar) -->
+                <div id="modal-alat" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                        <form id="form-alat">
+                            <h3 id="modal-alat-title" class="text-lg font-semibold mb-4">Tambah Alat Baru</h3>
+                            <input type="hidden" id="form-alat-id">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="form-alat-nama" class="block text-sm font-medium text-gray-700">Nama Alat</label>
+                                    <input id="form-alat-nama" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="form-alat-deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                                    <textarea id="form-alat-deskripsi" rows="3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label for="form-alat-stok" class="block text-sm font-medium text-gray-700">Jumlah Stok</label>
+                                        <input id="form-alat-stok" type="number" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="form-alat-kondisi" class="block text-sm font-medium text-gray-700">Kondisi</label>
+                                        <select id="form-alat-kondisi" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="Baik">Baik</option>
+                                            <option value="Rusak Ringan">Rusak Ringan</option>
+                                            <option value="Rusak Berat">Rusak Berat</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="form-alat-lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
+                                        <input id="form-alat-lokasi" type="text" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                                
+                                <!-- Upload Gambar -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gambar Alat</label>
+                                    <div class="flex flex-col space-y-4">
+                                        <!-- Input File -->
+                                        <div>
+                                            <input type="file" id="form-alat-gambar-file" accept="image/*" class="hidden">
+                                            <button type="button" id="btn-pilih-gambar" class="w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                                <i class="fas fa-upload mr-2"></i>Pilih Gambar dari Komputer
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Preview Gambar -->
+                                        <div id="gambar-preview-container" class="hidden">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Preview Gambar</label>
+                                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                                <img id="gambar-preview" src="" alt="Preview" class="mx-auto max-h-48 rounded-lg image-preview hidden">
+                                                <div id="gambar-info" class="mt-2 text-sm text-gray-500"></div>
+                                                <button type="button" id="btn-hapus-gambar" class="mt-2 text-red-600 hover:text-red-800 text-sm">
+                                                    <i class="fas fa-trash mr-1"></i>Hapus Gambar
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Atau Input URL -->
+                                        <div class="relative">
+                                            <div class="absolute inset-0 flex items-center">
+                                                <div class="w-full border-t border-gray-300"></div>
+                                            </div>
+                                            <div class="relative flex justify-center text-sm">
+                                                <span class="px-2 bg-white text-gray-500">Atau</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="form-alat-gambar-url" class="block text-sm font-medium text-gray-700">URL Gambar (opsional)</label>
+                                            <input id="form-alat-gambar-url" type="text" placeholder="https://example.com/image.jpg" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" id="btn-batal-alat" class="py-2 px-4 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Batal</button>
+                                <button type="submit" class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="bg-white shadow-lg rounded-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Total</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Tersedia</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kondisi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alat-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Memuat data alat...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pinjam Alat -->
+            <div id="page-peminjaman" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Pinjam Alat Olahraga</h2>
+
+                <div class="mt-4">
+                    <input type="search" id="search-peminjaman-input" 
+                           placeholder="Cari nama alat..." 
+                           class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div id="peminjaman-grid" class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center text-gray-500">Memuat data alat...</div>
+                </div>
+                    
+                <!-- Modal Detail Peminjaman -->
+                <div id="modal-detail-peminjaman" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
+                        <h3 class="text-lg font-semibold mb-4">Detail Peminjaman</h3>
+                        <form id="form-detail-peminjaman">
+                            <input type="hidden" id="detail-alat-id">
+                            <input type="hidden" id="detail-alat-nama">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Nama Alat</label>
+                                    <p id="detail-nama-alat" class="mt-1 text-gray-900 font-medium"></p>
+                                </div>
+                                <div>
+                                    <label for="detail-tujuan" class="block text-sm font-medium text-gray-700">Tujuan Peminjaman</label>
+                                    <textarea id="detail-tujuan" rows="3" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Jelaskan tujuan peminjaman alat ini..."></textarea>
+                                </div>
+                                <div>
+                                    <label for="detail-lokasi-penggunaan" class="block text-sm font-medium text-gray-700">Lokasi Penggunaan</label>
+                                    <input id="detail-lokasi-penggunaan" type="text" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Dimana alat akan digunakan?">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="detail-tanggal-pinjam" class="block text-sm font-medium text-gray-700">Tanggal Pinjam</label>
+                                        <input id="detail-tanggal-pinjam" type="date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                    <div>
+                                        <label for="detail-tanggal-kembali" class="block text-sm font-medium text-gray-700">Tanggal Kembali</label>
+                                        <input id="detail-tanggal-kembali" type="date" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+                                </div>
+                                <!-- Tambahan: Input jumlah barang -->
+                                <div>
+                                    <label for="detail-jumlah" class="block text-sm font-medium text-gray-700">Jumlah Barang</label>
+                                    <input id="detail-jumlah" type="number" min="1" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Masukkan jumlah yang akan dipinjam">
+                                </div>
+                            </div>
+                            <div class="flex justify-end space-x-3 mt-6">
+                                <button type="button" id="btn-batal-detail" class="py-2 px-4 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Batal</button>
+                                <button type="submit" class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Ajukan Peminjaman</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kelola Pengembalian (Admin) -->
+            <div id="page-kelola-pengembalian" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Kelola Pengembalian Alat</h2>
+                <p class="text-gray-600">Kelola semua pengembalian alat dari seluruh anggota. Hanya admin yang dapat mengubah status menjadi "Dikembalikan".</p>
+                
+                <div class="bg-white shadow-lg rounded-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peminjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pinjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Batas Kembali</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kelola-pengembalian-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">Memuat data peminjaman aktif...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Riwayat Peminjaman -->
+            <div id="page-riwayat" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Riwayat Peminjaman Saya</h2>
+                <p class="text-gray-600">Lihat semua riwayat peminjaman yang pernah Anda lakukan.</p>
+                
+                <div class="bg-white shadow-lg rounded-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pinjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kembali</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Denda</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riwayat-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Memuat data riwayat...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Persetujuan Peminjaman (Admin) -->
+            <div id="page-persetujuan" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Persetujuan Peminjaman</h2>
+                <p class="text-gray-600">Tinjau dan setujui atau tolak permintaan peminjaman dari anggota.</p>
+                
+                <div class="bg-white shadow-lg rounded-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peminjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alat</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pinjam</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kembali</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="persetujuan-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Memuat data persetujuan...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Laporan (Admin) -->
+            <div id="page-laporan" class="page-content hidden space-y-6">
+                
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-gray-800">Laporan Semua Peminjaman</h2>
+                    <button onclick="cetakLaporan()" 
+                            class="py-2 px-4 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition duration-150 flex items-center">
+                        <i class="fas fa-print mr-2"></i>
+                        Cetak
+                    </button>
+                </div>
+
+                <div id="laporan-print-area-wrapper">
+                    <div class="print-header hidden">
+                        <h1>LAPORAN PEMINJAMAN ALAT OLAHRAGA</h1>
+                        <p>SportSpace - Sistem Peminjaman Alat Olahraga</p>
+                    </div>
+                    
+                    <div class="print-info hidden">
+                        <div>
+                            <strong>Tanggal Cetak:</strong> <span id="print-tanggal-cetak"></span>
+                        </div>
+                        <div>
+                            <strong>Halaman:</strong> <span id="print-halaman-info"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow-lg rounded-xl overflow-x-auto" id="laporan-print-area">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Peminjam</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Alat</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Pinjam</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tgl Kembali</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Denda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="laporan-table-body" class="bg-white divide-y divide-gray-200">
+                                <tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Memuat data laporan...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="print-summary hidden">
+                        <!-- Summary akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manajemen Pengguna (Admin) -->
+            <div id="page-pengguna" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Manajemen Pengguna</h2>
+                <div class="bg-white shadow-lg rounded-xl overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peran</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pengguna-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Memuat data pengguna...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pengaturan Denda (Admin) -->
+            <div id="page-denda" class="page-content hidden space-y-6">
+                <h2 class="text-xl font-semibold text-gray-800">Pengaturan Denda</h2>
+                <div class="bg-white shadow-lg rounded-xl p-6 max-w-lg">
+                    <form id="form-denda" class="space-y-4">
+                        <div>
+                            <label for="denda-per-hari" class="block text-sm font-medium text-gray-700">Denda per Hari (Rp)</label>
+                            <input id="denda-per-hari" type="number" min="0" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="py-2 px-4 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+                                Simpan Pengaturan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal Bukti Peminjaman -->
+    <div id="modal-bukti-peminjaman" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Bukti Peminjaman</h3>
+                <button id="btn-cetak-bukti" class="py-1 px-3 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition">
+                    <i class="fas fa-print mr-1"></i>Cetak
+                </button>
+            </div>
+            <div id="bukti-peminjaman-content" class="space-y-4 border border-gray-200 p-4 rounded-lg">
+                <div class="text-center mb-4">
+                    <h2 class="text-xl font-bold">SPORTSPACE</h2>
+                    <p class="text-gray-600">Sistem Peminjaman Alat Olahraga</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">No. Peminjaman</p>
+                        <p id="bukti-no-peminjaman" class="font-medium">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Tanggal</p>
+                        <p id="bukti-tanggal" class="font-medium">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Nama Peminjam</p>
+                        <p id="bukti-nama-peminjam" class="font-medium">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Alat yang Dipinjam</p>
+                        <p id="bukti-nama-alat" class="font-medium">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-sm text-gray-500">Tujuan Peminjaman</p>
+                        <p id="bukti-tujuan" class="font-medium">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-sm text-gray-500">Lokasi Penggunaan</p>
+                        <p id="bukti-lokasi" class="font-medium">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Tanggal Pinjam</p>
+                        <p id="bukti-tanggal-pinjam" class="font-medium">-</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Tanggal Kembali</p>
+                        <p id="bukti-tanggal-kembali" class="font-medium">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-sm text-gray-500">Status</p>
+                        <p id="bukti-status" class="font-medium px-2 py-1 rounded status-waiting inline-block">Menunggu Persetujuan</p>
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
+                    <p>Simpan bukti ini sebagai tanda pengajuan peminjaman Anda</p>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button id="btn-tutup-bukti" class="py-2 px-4 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="scripts/app.js"></script>
+</body>
+</html>

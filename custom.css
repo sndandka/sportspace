@@ -1,0 +1,127 @@
+/* Custom CSS untuk SportSpace */
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Sidebar */
+#sidebar { 
+    transition: transform 0.3s ease-in-out; 
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* Menyembunyikan elemen khusus Admin secara default */
+.admin-only {
+    display: none;
+}
+
+/* Style untuk Tab Login/Register */
+.tab-btn {
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    color: #4b5563;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+.tab-btn.active {
+    background-color: white;
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+}
+
+/* Animasi loading sederhana */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+
+/* Kelas untuk menyembunyikan halaman */
+.hidden {
+    display: none;
+}
+
+/* Animasi untuk halaman utama */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Efek hover untuk kartu fitur */
+.feature-card {
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Status badge */
+.status-waiting {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-approved {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.status-rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.status-returned {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* Style untuk preview gambar */
+.image-preview {
+    max-height: 200px;
+    object-fit: contain;
+}
+
+/* Responsif untuk sidebar */
+@media (max-width: 1023px) {
+    #sidebar {
+        width: 80%;
+        max-width: 300px;
+    }
+    
+    #main-content {
+        margin-left: 0 !important;
+    }
+}
+
+@media (max-width: 767px) {
+    #sidebar {
+        width: 85%;
+    }
+}
+
+@media (max-width: 480px) {
+    #sidebar {
+        width: 90%;
+    }
+}
